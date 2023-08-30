@@ -1,4 +1,4 @@
-package EjercicioThreads;
+package TPractico2.Ejercicio1;
 
     public class Cliente extends Thread {
             public void run() {

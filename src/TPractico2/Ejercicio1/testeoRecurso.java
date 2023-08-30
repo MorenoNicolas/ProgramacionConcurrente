@@ -1,4 +1,4 @@
-package EjercicioThreads;
+package TPractico2.Ejercicio1;
 
 public class testeoRecurso {
     public static void main(String[] args) {
