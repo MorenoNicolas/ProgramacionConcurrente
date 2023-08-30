@@ -10,3 +10,6 @@ public class testeoRecurso {
                 ines.start();
             }
         }
+        /*A)Participan 2 hilos 
+         * B) el metodo uso 
+        */
