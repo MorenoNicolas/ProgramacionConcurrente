@@ -8,10 +8,6 @@ public class Principal {
         Datos unDato2 = new Datos(2, 0);
         Datos unDato3 = new Datos(3, 0);
 
-        unDato1.setDato(unDato2);
-        unDato2.setDato(unDato3);
-        unDato3.setDato(unDato1);
-
         arr[0] = new ProcesoI(unDato1);
         arr[1] = new ProcesoI(unDato2);
         arr[2] = new ProcesoI(unDato3);
