@@ -1,4 +1,4 @@
-package TPractico4.EJ2;
+package TPractico4.EJ3;
 
 import java.util.concurrent.Semaphore;
 

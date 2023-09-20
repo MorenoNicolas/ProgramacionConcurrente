@@ -17,11 +17,11 @@ public class RecursoComp {
     public void imprimir(char caract, int n) throws InterruptedException {
         switch (caract) {
             case 'A':
-                this.imprimirA(n);
+                this.imprimirA(n); break;
             case 'B':
-                this.imprimirB(n);
+                this.imprimirB(n);break;
             case 'C':
-                this.imprimirC(n);
+                this.imprimirC(n);break;
         }
     }
 
