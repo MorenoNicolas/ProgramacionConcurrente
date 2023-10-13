@@ -3,38 +3,34 @@ package TPractico5.ProductorConsumidor;
 import java.util.concurrent.Semaphore;
 
 public class Buffer {
-    Semaphore vacio = new Semaphore(0);
-    Semaphore completo = new Semaphore(0);
-    Semaphore mutex = new Semaphore(1);
 
     int cant = 0;
     int capacidad = 10;
+    Semaphore vacio = new Semaphore(capacidad);
+    Semaphore completo = new Semaphore(0);
+    Semaphore mutex = new Semaphore(1);
 
-    
-    public void agrega(int num) throws InterruptedException{
-        mutex.acquire();
-        if(cant==0||cant<capacidad){
-            cant+=num;
-            System.out.println("El Productor "+ Thread.currentThread().getName()+" producto 2 productos");
-            vacio.release(num); 
-        }else if(cant>=capacidad){
-            completo.acquire(num);
-        }
-        System.out.println("Hay " +cant+ " productos en la cinta");
-        mutex.release();
+    public void agrega(int num) throws InterruptedException {
+        if (num<=(capacidad-cant)) {
+            vacio.acquire(num);
+            System.out.println("El Productor " + Thread.currentThread().getName() + " agrego +"+num+" productos");
+            mutex.acquire();
+            cant += num;
+            System.out.println("Hay " + cant + " productos en la cinta");
+            mutex.release();
+            completo.release(num);
+        } 
     }
 
-    public void sacar(int num) throws InterruptedException{
-        mutex.acquire();
-        if(cant>0){
-            vacio.acquire(num);
-            cant-=num;
-            System.out.println("El Consumidor "+ Thread.currentThread().getName()+" consumio 2 productos");
-        }else if(cant>=capacidad){
-            cant-=num;
-            completo.release(num);
+    public void sacar(int num) throws InterruptedException {
+        if (cant > 0 && num <= cant) {
+            completo.acquire(num);
+            System.out.println("El Consumidor saco -"+num+" productos");
+            mutex.acquire();
+            cant -= num;
+            System.out.println("Hay " + cant + " productos en la cinta");
+            mutex.release();
+            vacio.release(num);
         }
-        System.out.println("Hay " +cant+ " productos en la cinta");
-        mutex.release();
     }
 }

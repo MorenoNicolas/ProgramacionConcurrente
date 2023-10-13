@@ -1,7 +1,7 @@
 package TPractico5.ProductorConsumidor;
 
 public class Consumidor extends Thread {
-    private Buffer recursoC = new Buffer();
+    private Buffer recursoC;
     private int cantidad;
 
     public Consumidor(Buffer nuevo, int cant){
@@ -11,8 +11,8 @@ public class Consumidor extends Thread {
     public void run(){
         while(true){
             try {
-                recursoC.agrega(cantidad);
-                Thread.sleep(1000);
+                recursoC.sacar(cantidad);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
             }
         }
