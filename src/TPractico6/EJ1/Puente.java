@@ -1,4 +1,4 @@
-package TPractico5.EJ8.EJ1;
+package TPractico6.EJ1;
 
 public class Puente {
     
