@@ -7,10 +7,10 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Observatorio {
     private int ocupacion;
     private int capacidadMax;
-    private int investigadorTrabajando;
+    private int investigadorEsperando;
     private int mantenimientoTrabajando;
     private int visVisitando;
-    private boolean discapacitado;
+    //private boolean discapacitado;
     //locks
     private Lock mutex = new ReentrantLock();
     Condition investigador = mutex.newCondition();
@@ -24,10 +24,11 @@ public class Observatorio {
     public void entrarVisitante() throws InterruptedException{
         try {
             mutex.lock();
-        while(ocupacion>=capacidadMax&&mantenimientoTrabajando>0&&investigadorTrabajando>0){
+        while(ocupacion>=capacidadMax&&mantenimientoTrabajando>0&&investigadorEsperando!=0){
             visitante.await();
         }
         ocupacion++;
+        visVisitando++;
         System.out.println(Thread.currentThread().getName()+" entro visitante comun");
         
         } catch (Exception e) {
@@ -37,7 +38,7 @@ public class Observatorio {
     public void entrarMantenimiento(){
         try {
             mutex.lock();
-            while(ocupacion>=capacidadMax&&investigadorTrabajando>0&&visVisitando>0){
+            while(ocupacion>=capacidadMax&&investigadorEsperando!=0&&visVisitando>0){
                 mantenimiento.await();
             }
             ocupacion++;
@@ -50,26 +51,67 @@ public class Observatorio {
     public void entrarInvestigador(){
         try {
             mutex.lock();
-            while(ocupacion>=capacidadMax&&visVisitando>0&&mantenimientoTrabajando>0&&investigadorTrabajando>0){
+            investigadorEsperando++;
+            while(ocupacion>=1&&visVisitando>0&&mantenimientoTrabajando>0){
                 investigador.await();
             }
             ocupacion++;
-            investigadorTrabajando++;
+            investigadorEsperando--;
             System.out.println(Thread.currentThread().getName()+" entro un investigador"); 
         } catch (Exception e) {
         }finally{mutex.unlock();}
     }
-    public void salirObservatorio(){
+    public void salirInvestigador(){
         mutex.lock();
         try {
             ocupacion--;
-            if(ocupacion==0){
+            System.out.println(Thread.currentThread().getName()+" el investigador salio");
+            if(investigadorEsperando>0){
                 investigador.signalAll();
             }else{
-                visitante.signalAll();
                 mantenimiento.signalAll();
+                visitante.signalAll();
+            }
+        } catch (Exception e) {
+        }finally{mutex.unlock();}
+    }
+    public void salirMantenimiento(){
+        mutex.lock();
+        try {
+            ocupacion--;
+            System.out.println(Thread.currentThread().getName()+" un conserje salio");
+            mantenimientoTrabajando--;
+            if(mantenimientoTrabajando>0){
+                mantenimiento.signalAll();
+            }else{
+                investigador.signalAll();
+                visitante.signalAll();
+            }
+        } catch (Exception e) {
+        }finally{mutex.unlock();}
+    }
+    public void salirVisitante(){
+        mutex.lock();
+        try {
+            ocupacion--;
+            System.out.println(Thread.currentThread().getName()+" un visitante salio");
+            visVisitando--;
+            if(visVisitando==0&&mantenimientoTrabajando==0){
+                investigador.signalAll();
+            }else{
+                mantenimiento.signalAll();
+                visitante.signalAll();
             }
         } catch (Exception e) {
         }finally{mutex.unlock();}
     }
 }
+            // ocupacion--;
+            // if(ocupacion==0){
+            //     investigador.signalAll();
+            // }else if(mantenimientoTrabajando>=0){
+            //     mantenimiento.signalAll();
+
+            // }else{
+            //     visitante.signalAll();
+            // }
