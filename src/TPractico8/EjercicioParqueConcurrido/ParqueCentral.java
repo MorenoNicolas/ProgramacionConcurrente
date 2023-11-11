@@ -22,7 +22,7 @@ public class ParqueCentral {
     }
 
     public synchronized void entrarNormal() throws InterruptedException {
-        while(ocupacion>=cupoParque&&privEsperando>=1){
+        while(ocupacion>=cupoParque||privEsperando>=1){
             this.wait();
         }
         ocupacion++;

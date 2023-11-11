@@ -22,7 +22,7 @@ public class CentroHemoterapia {
             System.out.println("El donador: "+ Thread.currentThread().getName()+" agarro una revista");
             this.wait();
         }
-        if(sillaDisponibles<12&&revDisponibles<9){
+        if(sillaDisponibles<sillaTotales&&revDisponibles<revistasTotal){
             revDisponibles++;
             sillaDisponibles++;
         }
