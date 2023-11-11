@@ -10,7 +10,7 @@ public class Donador extends Thread{
     public void run(){
         try {
             centro.donarSangre();
-            Thread.sleep(2000);
+            Thread.sleep(2500);
             centro.salirCentro();            
         } catch (Exception e) {
         }

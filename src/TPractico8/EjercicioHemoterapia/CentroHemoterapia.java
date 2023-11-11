@@ -1,30 +1,39 @@
 package TPractico8.EjercicioHemoterapia;
 
-import java.util.concurrent.Semaphore;
-
 public class CentroHemoterapia {
-    private Semaphore camillas = new Semaphore(4, true);
-    private Semaphore revistas = new Semaphore(9);
-    private Semaphore mutex = new Semaphore(1);
-    private Semaphore mutex2 = new Semaphore(1);
-    private int revDisponible = 9;
-    private int camOcupadas = 0;
+    private int revistasTotal = 3;
+    private int camTotales = 1;
+    private int sillaTotales = 6;
+    private int revDisponibles = revistasTotal;
+    private int camDisponibles = camTotales;
+    private int sillaDisponibles = sillaTotales;
 
-    public void donarSangre() throws InterruptedException{
-            mutex.acquire();
-            revistas.acquire();
-            System.out.println("El donante: "+ Thread.currentThread().getName()+" agarro una revista");
-            camillas.acquire();
-            System.out.println("El donante: "+ Thread.currentThread().getName()+" termino de leer y se acosto en la camilla");
-            revistas.release();
-            mutex.release();
+    public synchronized void donarSangre() throws InterruptedException {
+        while (camDisponibles <= 0) {
+            while (sillaDisponibles <= 0) {
+                this.wait();
+            }
+            sillaDisponibles--;
+            System.out.println("El donador: "+ Thread.currentThread().getName()+" se sento en una silla");
+            while (revDisponibles <= 0) {
+                this.wait();
+            }
+            revDisponibles--;
+            System.out.println("El donador: "+ Thread.currentThread().getName()+" agarro una revista");
+            this.wait();
         }
-    
-    public void salirCentro() throws InterruptedException{
-        mutex2.acquire();
-        System.out.println("--------El donante: "+ Thread.currentThread().getName()+" libero una camilla--------");
-        camillas.release();
-       
-        mutex2.release();
+        if(sillaDisponibles<12&&revDisponibles<9){
+            revDisponibles++;
+            sillaDisponibles++;
+        }
+        System.out.println("El donador: "+ Thread.currentThread().getName()+" se acosto en una camilla");
+        camDisponibles--;
+        this.notifyAll();
+    }   
+
+    public synchronized void salirCentro() throws InterruptedException {
+        System.out.println("---- El donador: "+ Thread.currentThread().getName()+" se fue del centro de hemoterapia ----");
+        camDisponibles++;
+        this.notifyAll();
     }
 }
