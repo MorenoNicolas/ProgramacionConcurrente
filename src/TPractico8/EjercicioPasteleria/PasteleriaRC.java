@@ -10,8 +10,9 @@ public class PasteleriaRC {
     private Semaphore caja = new Semaphore(1);
     private Semaphore empaquetadores;
     private Semaphore pasteles = new Semaphore(0);
+    private Semaphore brazo = new Semaphore(0);
     private Semaphore mutex = new Semaphore(1);
-    private int cantPasteles;
+    private Semaphore mutex2 = new Semaphore(1);
     private int pesoCaja;
     private int pesoCajaActual;
 
@@ -21,31 +22,46 @@ public class PasteleriaRC {
     }
 
     public void hornearPastel(int peso) throws InterruptedException{
-        mutex.acquire();
-        cantPasteles++;
         colaPasteles.add(peso);
+        System.out.println("Se agrego un pastel a la cinta de: " +peso+" gramos");
         pasteles.release();
-        mutex.release();
     }
 
     public void tomarPastel() throws InterruptedException{
+        mutex.acquire();
         pasteles.acquire();
-        caja.acquire();
+        empaquetadores.acquire();
+        
         if(pesoPrimerPastel()+pesoCajaActual<=pesoCaja){
+            pesoCajaActual += pesoPrimerPastel();
+            System.out.println("La empaquetadora: "+ Thread.currentThread().getName()+" puso un pastel en la caja");
+            System.out.println("Hay: "+pesoCajaActual+"/"+pesoCaja+"kg en la caja actualmente");
+            colaPasteles.remove();
+            
+        }else{
+            System.out.println("------Se intento meter un pastel de: "+colaPasteles.peek()+", pidio reponer la caja------");
+            brazo.release();
+            caja.acquire();
             pesoCajaActual += pesoPrimerPastel();
             colaPasteles.remove();
         }
+        empaquetadores.release();
+        mutex.release();
     }
 
-    public void reponerCaja(){
-
+    public void reponerCaja() throws InterruptedException{
+        pesoCajaActual = 0;
+        caja.release();
+        
     }
 
-    public void retirarCaja(){
-
+    public void retirarCaja() throws InterruptedException{
+        
+        brazo.acquire();
+        System.out.println("El brazo retiro la caja y coloco otra en su lugar");
     }
 
-    public int pesoPrimerPastel(){
+    private int pesoPrimerPastel(){
         return colaPasteles.peek();
     }
 }
