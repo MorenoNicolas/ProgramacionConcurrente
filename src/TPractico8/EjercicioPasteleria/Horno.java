@@ -22,7 +22,7 @@ public class Horno extends Thread{
                     case 'C':paste.hornearPastel(25);break;
                     default: System.out.println("No existe ese tipo de Horno");break;
                 }
-                Thread.sleep(random.nextInt(2000, 3500));
+                //Thread.sleep(random.nextInt(2000, 3500));
             }            
         } catch (Exception e) {
         }
